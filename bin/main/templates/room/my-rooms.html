@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Rooms</title>
+    <script>
+        function refundRoom(roomId) {
+            if (confirm("このイベントを取り消しますか？")) {
+                fetch(`/room/refund/${roomId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        alert("イベントを取り消しました。");
+                        location.reload();
+                    } else {
+                        alert("イベントの取り消しに失敗しました。");
+                    }
+                }).catch(error => {
+                    console.error("Error:", error);
+                    alert("エラーが発生しました。");
+                });
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <div th:insert="~{fragments/header :: header}"></div>
+
+    <h1>自分が作成した部屋</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>部屋名</th>
+                <th>説明</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="room : ${myRooms}">
+                <td th:text="${room.id}"></td>
+                <td th:text="${room.roomTitle}"></td>
+                <td th:text="${room.roomDescription}"></td>
+                <td>
+                    <form th:action="@{/room/{roomId}/my-room-bet-targets(roomId=${room.id})}" method="post">
+                        <input type="hidden" name="roomId" th:value="${room.id}" />
+                        <button type="submit"
+                                th:disabled="${
+                                    room.status != T(com.example.springwebapp.model.GambleRoom.RoomStatus).PENDING
+                                }">
+                                参加者を確認する(勝者を選択する)
+                        </button>
+                    </form>
+
+                    <button 
+                        type="button" 
+                        th:disabled="${
+                            room.status != T(com.example.springwebapp.model.GambleRoom.RoomStatus).PENDING
+                        }"
+                        th:onclick="'refundRoom(' + ${room.id} + ')'">
+                        イベントの取り消し
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="/home">ホームに戻る</a>
+</body>
+</html>

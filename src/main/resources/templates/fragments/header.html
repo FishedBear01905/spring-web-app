@@ -1,0 +1,12 @@
+<div th:fragment="header">
+    <div th:if="${session.loggedInUser != null}">
+        <p>ログイン中: <span th:text="${session.loggedInUser.userName}"></span></p>
+        <p>所持金: <span th:text="${session.loggedInUser.moneyPool}"></span> 円</p>
+        <a href="/logout">ログアウト</a>
+    </div>
+    <div th:if="${session.loggedInUser == null}">
+        <p>ログインしていません</p>
+        <a href="/login">ログイン</a>
+    </div>
+    <hr>
+</div>

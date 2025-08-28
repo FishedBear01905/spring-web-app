@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bet Target 一覧</title>
+    <script>
+        function showForm(targetId) {
+            console.log("showForm");
+
+            document.querySelectorAll('.bet-form').forEach(form => form.style.display = 'none');
+            const targetForm = document.getElementById(`form-${targetId}`);
+            if (targetForm) {
+                targetForm.style.display = 'block';
+            }
+        }
+
+        function validateForm(minBet, maxBet, moneyPool) {
+            
+            const betPriceInput = document.getElementById('betPrice');
+            if (!betPriceInput) {
+                displayError(betPriceInput, `掛け金はが入力されていません`);
+                event.preventDefault();
+                return;
+            }
+
+            const betPrice = parseFloat(betPriceInput.value);
+            if (isNaN(betPrice) || betPrice < minBet || betPrice > maxBet) {
+                displayError(betPriceInput, `掛け金は ${minBet} 以上 ${maxBet} 以下でなければなりません。`);
+                event.preventDefault();
+                return;
+            }
+
+            if (betPrice > moneyPool) {
+                displayError(betPriceInput, `プール金額が不足しています`);
+                event.preventDefault();
+                return;
+            }
+
+            clearError(betPriceInput);
+        }
+
+        function displayError(input, message) {
+            const errorElement = input.nextElementSibling;
+            if (errorElement) {
+                errorElement.textContent = message;
+            }
+        }
+
+        function clearError(input) {
+            const errorElement = input.nextElementSibling;
+            if (errorElement) {
+                errorElement.textContent = '';
+            }
+        }
+    </script>
+</head>
+<body>
+    <div th:insert="~{fragments/header :: header}"></div>
+
+    <h1>Room ID: <span th:text="${roomId}"></span> </h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>名前</th>
+                <th>説明</th>
+                <th>最小掛け金</th>
+                <th>最大掛け金</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="betTarget : ${betTargets}">
+                <td th:text="${betTarget.id}"></td>
+                <td th:text="${betTarget.targetTitle}"></td>
+                <td th:text="${betTarget.targetDescription}"></td>
+                <td th:text="${gambleRoom.betMoneyMin}"></td>
+                <td th:text="${gambleRoom.betMoneyMax}"></td>
+                <td>
+                    <button type="button" th:onclick="'showForm(' + ${betTarget.id} + ')'">賭ける</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div th:each="betTarget : ${betTargets}" th:id="'form-' + ${betTarget.id}" class="bet-form" style="display: none;">
+        <h2 th:text="'Bet Target: ' + ${betTarget.targetTitle}"></h2>
+        <form th:action="@{/bet/save}" method="post" th:object="${betHistory}" >
+            <input type="hidden" th:name="betTargetId" th:value="${betTarget.id}" />
+            <input type="hidden" th:name="betRoomId" th:value="${betTarget.gambleRoomId}" />
+            <input type="hidden" th:name="userId" th:value="${session.loggedInUser.id}" />
+            <input type="hidden" th:name="deadline" th:value="${gambleRoom.deadline}" />
+            <input type="hidden" th:name="isAfterDeadLine" th:value="false">
+            <input type="hidden" th:name="status" th:value="PENDING" />
+            <label for="betPrice">賭け金額:</label>
+            <input type="number" name="betPrice" id="betPrice" required />
+            <span class="error-message" style="color: red;"></span>
+            <button type="submit" th:onclick="
+                'validateForm( 
+                    ' + ${gambleRoom.betMoneyMin} + ',
+                    ' + ${gambleRoom.betMoneyMax} + ' ,
+                    ' + ${session.loggedInUser.moneyPool} + '
+                )'">賭ける
+            </button>
+        </form>
+    </div>
+
+    <a href="/room/list">部屋一覧に戻る</a>
+</body>
+</html>

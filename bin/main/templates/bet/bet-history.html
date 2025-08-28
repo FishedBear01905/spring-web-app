@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bet History</title>
+    <script>
+        function cancelBet(betId) {
+            if (confirm("この賭けを取り消しますか？")) {
+                fetch(`/bet/cancel/${betId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        alert("賭けを取り消しました。");
+                        location.reload();
+                    } else {
+                        alert("賭けの取り消しに失敗しました。");
+                    }
+                }).catch(error => {
+                    console.error("Error:", error);
+                    alert("エラーが発生しました。");
+                });
+            }
+        }
+        function payout(betId) {
+            fetch(`/bet/payout/${betId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    alert("振込が完了しました");
+                    location.reload();
+                } else {
+                    alert("振込に失敗しました。");
+                }
+            }).catch(error => {
+                console.error("Error:", error);
+                alert("エラーが発生しました。");
+            });
+        }
+
+    </script>
+</head>
+<body>
+    <div th:insert="~{fragments/header :: header}"></div>
+
+    <h1>賭け履歴 User ID: <span th:text="${userId}"></span></h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Bet Room ID</th>
+                <th>Bet Target ID</th>
+                <th>掛け金</th>
+                <th>イベント後</th>
+                <th>勝者</th>
+                <th>報酬額</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="history : ${betHistorys}">
+                <td th:text="${history.id}"></td>
+                <td th:text="${history.betRoomId}"></td>
+                <td th:text="${history.betTargetId}"></td>
+                <td th:text="${history.betPrice}"></td>
+                <td th:text="${history.payout}"></td>
+                <td th:text="${history.deadline}"></td>
+                <td th:text="${history.status}"></td>
+                <td>
+                    <button 
+                        type="button" 
+                        th:disabled="${history.isAfterDeadLine || history.status == T(com.example.springwebapp.model.BetHistory.BetStatus).END}" 
+                        th:onclick="'cancelBet(' + ${history.id} + ')'">
+                        取り消し
+                    </button>
+                    <button 
+                        type="button" 
+                        th:disabled="${
+                            history.status != T(com.example.springwebapp.model.BetHistory.BetStatus).WIN
+                            &&  history.status != T(com.example.springwebapp.model.BetHistory.BetStatus).REFUND}"
+                        th:onclick="'payout(' + ${history.id} + ')'">
+                        振込
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

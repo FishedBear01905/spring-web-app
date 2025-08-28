@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ホームページ</title>
+</head>
+<body>
+    <div th:insert="~{fragments/header :: header}"></div>
+
+    <button onclick="location.href='/user/create'">アカウント作成</button>
+
+    <h2>開催者</h2>
+    <button onclick="location.href='/room/form'">部屋作成</button>
+    <button onclick="location.href='/my-rooms'">自分の作成した部屋（結果選択）</button>
+
+    <h2>参加者</h2>
+    <button onclick="location.href='/room/list'">部屋一覧（賭ける）</button>
+    <button onclick="location.href='/bet-history'">自分のベット履歴（入金）</button>
+
+</body>
+</html>

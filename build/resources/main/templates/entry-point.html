@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>エントリーポイント</title>
+</head>
+<body>
+    <div th:insert="~{fragments/header :: header}"></div>
+
+    <h1>エントリーポイント</h1>
+    <button onclick="location.href='/user/create'">アカウント作成</button>
+    <button onclick="location.href='/room/form'">部屋作成</button>
+    <button onclick="location.href='/room/list'">部屋一覧</button>
+</body>
+</html>

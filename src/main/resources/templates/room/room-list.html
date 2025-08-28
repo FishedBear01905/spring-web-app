@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>部屋一覧</title>
+</head>
+<body>
+    <div th:insert="~{fragments/header :: header}"></div>
+
+    <h1>部屋一覧</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>部屋ID</th>
+                <th>部屋名</th>
+                <th>詳細</th>
+                <th>最小額</th>
+                <th>手数料</th>
+                <th>ステータス</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="room : ${rooms}">
+                <td th:text="${room.id}"></td>
+                <td th:text="${room.roomTitle}"></td>
+                <td th:text="${room.roomDescription}"></td>
+                <td th:text="${room.betMoneyMin}"></td>
+                <td th:text="${room.commission}"></td>
+                <td th:text="${room.status}"></td>
+                <td>
+                    <form th:action="@{/room/{gambleRoomId}/bet-targets(gambleRoomId=${room.id})}" method="post">
+                        <input type="hidden" name="roomId" th:value="${room.id}" />
+                        <button type="submit"
+                                th:disabled="${
+                                    room.status != T(com.example.springwebapp.model.GambleRoom.RoomStatus).PENDING ||
+                                    room.isAfterDeadLine
+                                }">
+                                賭ける
+                        </button>
+                    </form>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="/">ホームに戻る</a>
+</body>
+</html>

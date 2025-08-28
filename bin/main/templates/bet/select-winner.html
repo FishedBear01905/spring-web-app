@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ベット対象一覧</title>
+    <script>
+        function selectWinner(targetId) {
+            if (confirm("勝者に選択しますか？")) {
+                fetch(`/bet/select-winner/${targetId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        alert("選択しました");
+                        location.href = "/my-rooms";
+                    } else {
+                        alert("選択に失敗しました");
+                    }
+                }).catch(error => {
+                    console.error("Error:", error);
+                    alert("エラーが発生しました。");
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+    <div th:insert="~{fragments/header :: header}"></div>
+
+    <h1>部屋 ID: <span th:text="${roomId}"></span> のベット対象</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>名前</th>
+                <th>説明</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="target : ${betTargets}">
+                <td th:text="${target.id}"></td>
+                <td th:text="${target.targetTitle}"></td>
+                <td th:text="${target.targetDescription}"></td>
+                <td>
+                    <button 
+                        type="button" 
+                        th:onclick="'selectWinner(' + ${target.id} + ')'">
+                        勝者にする
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/my-rooms}">部屋一覧に戻る</a>
+</body>
+</html>
