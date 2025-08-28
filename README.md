@@ -17,4 +17,4 @@
 <img width="644" height="784" alt="image" src="https://github.com/user-attachments/assets/8dca2b6d-8096-46c9-acf1-17dd93e60dff" />
 
 ## エラーハンドリング
-<img width="515" height="823" alt="image" src="https://github.com/user-attachments/assets/610770f7-5673-46c0-ba65-eb88b38c2205" />
+<img width="435" height="738" alt="image" src="https://github.com/user-attachments/assets/e7ab2cd7-2df1-4ab7-97b2-ec557f9e9838" />
